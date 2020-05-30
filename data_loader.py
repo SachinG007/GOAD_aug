@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 import torchvision.datasets as dset
 import os
+import torchvision.transforms as transforms
 
 class Data_Loader:
 

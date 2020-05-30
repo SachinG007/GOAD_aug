@@ -13,7 +13,20 @@ def get_transformer(type_trans):
         transformer = SimpleTransformer()
         return transformer
 
+class AffineTransformation_non90(object):
+    def __init__(self, flip, tx, ty, k_90_rotate, angle):
+        self.flip = flip
+        self.theta = k_90_rotate * angle
 
+    def __call__(self, x):
+        res_x = x
+        if self.flip:
+            res_x = np.fliplr(res_x)
+        zx = np.random.randint(4,9)/10
+        zy = np.random.randint(4,9)/10
+        res_x = apply_affine_transform(res_x,theta= self.theta, zx=zx, zy=zy, channel_axis=2, fill_mode='reflect')
+        return res_x
+        
 class AffineTransformation(object):
     def __init__(self, flip, tx, ty, k_90_rotate):
         self.flip = flip
@@ -83,3 +96,26 @@ class SimpleTransformer(AbstractTransformer):
         self._transformation_list = transformation_list
         return transformation_list
 
+class Transformer_non90(AbstractTransformer):
+    def __init__(self, translation_x=8, translation_y=8, angle=90):
+        self.max_tx = translation_x
+        self.max_ty = translation_y
+        self.angle = angle
+        super().__init__()
+
+    def _create_transformation_list(self):
+        transformation_list = []
+        if self.max_tx !=0:
+            for is_flip, tx, ty, k_rotate in itertools.product((False, True),
+                                                            (0, -self.max_tx, self.max_tx),
+                                                            (0, -self.max_ty, self.max_ty),
+                                                            range(4)):
+                transformation = AffineTransformation_non90(is_flip, tx, ty, k_rotate, self.angle)
+                transformation_list.append(transformation)
+        else:
+            for is_flip, k_rotate in itertools.product((False, True),
+                                                            (-1,0,1)):
+                transformation = AffineTransformation_non90(is_flip, 0, 0, k_rotate, self.angle)
+                transformation_list.append(transformation)
+
+        self._transformation_list = transformation_list

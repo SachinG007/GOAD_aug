@@ -28,6 +28,7 @@ class TransClassifier():
 
     def fit_trans_classifier(self, x_train, x_test, y_test):
         print("Training")
+        print(torch.cuda.is_available())
         self.netWRN.train()
         bs = self.args.batch_size
         N, sh, sw, nc = x_train.shape
@@ -37,6 +38,7 @@ class TransClassifier():
         ndf = 256
 
         for epoch in range(self.args.epochs):
+            
             rp = np.random.permutation(N//n_rots)
             rp = np.concatenate([np.arange(n_rots) + rp[i]*n_rots for i in range(len(rp))])
             assert len(rp) == N
