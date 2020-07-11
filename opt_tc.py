@@ -31,7 +31,9 @@ class TransClassifier():
         print(torch.cuda.is_available())
         self.netWRN.train()
         bs = self.args.batch_size
+        print(x_train.shape)
         N, sh, sw, nc = x_train.shape
+        # print(n_rots)
         n_rots = self.n_trans
         m = self.args.m
         celoss = torch.nn.CrossEntropyLoss()
